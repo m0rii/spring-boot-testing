@@ -11,11 +11,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findByEmail(String email);
 
     //define custom query using JPQL with index params
-    @Query("select e from Employee e where e.firstName =?1 and e.lasttName=?2")
+    @Query("select e from Employee e where e.firstName =?1 and e.lastName=?2")
     Employee findByJPQL(String firstName, String lastName);
 
     //define custom query using JPQL with named params
-    @Query("select e from Employee e where e.firstName =:firstname and e.lasttName=:lastName")
+    @Query("select e from Employee e where e.firstName =:firstname and e.lastName=:lastName")
     Employee findByJPQLNamedParams(@Param("firstname") String firstName, @Param("lastName") String lastName);
 
     //define custom query using Native SQL  with index params

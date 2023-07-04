@@ -38,13 +38,13 @@ class EmployeeServiceTest {
         employee = Employee.builder()
                 .id(1L)
                 .firstName("Mori")
-                .lasttName("Java")
+                .lastName("Java")
                 .email("Mori@java.com")
                 .build();
         employee2 = Employee.builder()
                 .id(2L)
                 .firstName("Aha")
-                .lasttName("Java")
+                .lastName("Java")
                 .email("aha@java.com")
                 .build();
     }

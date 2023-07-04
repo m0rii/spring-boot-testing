@@ -28,7 +28,7 @@ class EmployeeRepositoryTests {
     void setup() {
         employee = Employee.builder()
                 .firstName("Mori")
-                .lasttName("Java")
+                .lastName("Java")
                 .email("Mori@Mori.mo")
                 .build();
     }
@@ -44,7 +44,7 @@ class EmployeeRepositoryTests {
         assertNotNull(savedEmployee);
         assertThat(savedEmployee.getId()).isPositive();
         assertEquals("Mori", savedEmployee.getFirstName());
-        assertEquals(employee.getLasttName(), savedEmployee.getLasttName());
+        assertEquals(employee.getLastName(), savedEmployee.getLastName());
     }
 
     @DisplayName("Junit test for get all employee by findAll operation")
@@ -53,12 +53,12 @@ class EmployeeRepositoryTests {
         //given
         Employee employee2 = Employee.builder()
                 .firstName("Behi")
-                .lasttName("Java")
+                .lastName("Java")
                 .email("Behi@Behi.bi")
                 .build();
         Employee employee3 = Employee.builder()
                 .firstName("LopLop")
-                .lasttName("Java")
+                .lastName("Java")
                 .email("Lop@lop.lop")
                 .build();
 
@@ -159,7 +159,7 @@ class EmployeeRepositoryTests {
         //then
         assertNotNull(employeeDb);
         assertEquals(employeeDb.getFirstName(), employee.getFirstName());
-        assertEquals(employeeDb.getLasttName(), employee.getLasttName());
+        assertEquals(employeeDb.getLastName(), employee.getLastName());
         assertEquals(employeeDb.getEmail(), employee.getEmail());
 
     }
@@ -179,7 +179,7 @@ class EmployeeRepositoryTests {
         //then
         assertNotNull(employeeDb);
         assertEquals(employeeDb.getFirstName(), employee.getFirstName());
-        assertEquals(employeeDb.getLasttName(), employee.getLasttName());
+        assertEquals(employeeDb.getLastName(), employee.getLastName());
         assertEquals(employeeDb.getEmail(), employee.getEmail());
 
     }
@@ -200,7 +200,7 @@ class EmployeeRepositoryTests {
         //then
         assertNotNull(employeeDb);
         assertEquals(employeeDb.getFirstName(), employee.getFirstName());
-        assertEquals(employeeDb.getLasttName(), employee.getLasttName());
+        assertEquals(employeeDb.getLastName(), employee.getLastName());
         assertEquals(employeeDb.getEmail(), employee.getEmail());
     }
 
@@ -219,7 +219,7 @@ class EmployeeRepositoryTests {
         //then
         assertNotNull(employeeDb);
         assertEquals(employeeDb.getFirstName(), employee.getFirstName());
-        assertEquals(employeeDb.getLasttName(), employee.getLasttName());
+        assertEquals(employeeDb.getLastName(), employee.getLastName());
         assertEquals(employeeDb.getEmail(), employee.getEmail());
 
     }
