@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-class EmployeeControllerTests extends AbstractContainerBaseTest {
+class EmployeeControllerIT extends AbstractContainerBaseTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -34,8 +34,10 @@ class EmployeeControllerTests extends AbstractContainerBaseTest {
     @Autowired
     private ObjectMapper mapper;
 
+
     @BeforeEach
     void setup() {
+
         repository.deleteAll();
     }
 
@@ -112,7 +114,7 @@ class EmployeeControllerTests extends AbstractContainerBaseTest {
                 .andExpect(status().isNotFound());
     }
 
-    @DisplayName("Junit test for Update Employee REST API")
+    @DisplayName("Interation test for Update Employee REST API")
     @Test
     void givenEmloyeeId_whenUpdateEmloyee_thenUpdatedEmployeeObject() throws Exception {
         //given

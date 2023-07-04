@@ -3,6 +3,7 @@ package mori.java.springboottesting.integration.repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import mori.java.springboottesting.integration.contoller.AbstractContainerBaseTest;
 import mori.java.springboottesting.model.Employee;
 import mori.java.springboottesting.repository.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class EmployeeRepositoryIntegrationTests {
+class EmployeeRepositoryIntegrationTests extends AbstractContainerBaseTest {
     @Autowired
     private EmployeeRepository employeeRepository;
 
