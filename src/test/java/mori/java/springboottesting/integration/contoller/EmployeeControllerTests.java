@@ -1,53 +1,49 @@
-package mori.java.springboottesting.controller;
+package mori.java.springboottesting.integration.contoller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import mori.java.springboottesting.model.Employee;
-import mori.java.springboottesting.service.impl.EmployeeServiceImpl;
+import mori.java.springboottesting.repository.EmployeeRepository;
 import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@WebMvcTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
 class EmployeeControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private EmployeeServiceImpl employeeService;
+    @Autowired
+    private EmployeeRepository repository;
 
     @Autowired
     private ObjectMapper mapper;
 
-    @DisplayName("Junit test for Create Employee REST API")
+    @BeforeEach
+    void setup() {
+        repository.deleteAll();
+    }
+
+    @DisplayName("Integration test for Create Employee REST API")
     @Test
     void givenEmployeeObject_whenCreateEmployee_thenReturnSavedEmployee() throws Exception {
         //given
         Employee employee = Employee.builder().firstName("Mori").lastName("Java").email("Mori@Java.com").build();
-
-/*        given(employeeService.saveEmployee(ArgumentMatchers.any(Employee.class)))
-        .willAnswer((inocation) -> inocation.getArgument(0));*/
-
-        when(employeeService.saveEmployee(ArgumentMatchers.any(Employee.class))).then(returnsFirstArg());
 
         //when
         ResultActions response = mockMvc.perform(post("/api/employees")
@@ -55,7 +51,6 @@ class EmployeeControllerTests {
                 .content(mapper.writeValueAsString(employee)));
 
         //then
-
         response.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.firstName", CoreMatchers.is(employee.getFirstName())))
@@ -63,61 +58,54 @@ class EmployeeControllerTests {
                 .andExpect(jsonPath("$.email", CoreMatchers.is(employee.getEmail())));
     }
 
-    @DisplayName("Junit test for GetAll Employee REST API")
+
+    @DisplayName("Integration test for GetAll Employee REST API")
     @Test
     void givenGetAll_whenGetAllEmployee_thenListAllEmployee() throws Exception {
         //given
         List<Employee> listOfEmployees = new ArrayList<>();
         listOfEmployees.add(Employee.builder().firstName("Mori").lastName("Java").email("Mori@Java.com").build());
         listOfEmployees.add(Employee.builder().firstName("Behi").lastName("Java").email("Behi@Java.com").build());
+        repository.saveAll(listOfEmployees);
 
-
-        when(employeeService.getAllEmployees()).thenReturn(listOfEmployees);
 
         //when
         ResultActions response = mockMvc.perform(get("/api/employees"));
 
         //then
-
         response.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()", CoreMatchers.is(listOfEmployees.size())));
     }
 
-    @DisplayName("Junit test for GetEmployeeById REST API")
+    @DisplayName("Integration test for GetEmployeeById REST API")
     @Test
     void givenEmloyeeId_whenGetEmployeeById_thenEmployeeObject() throws Exception {
         //given
-        long employeeId = 1L;
-        Employee employee = Employee.builder().id(employeeId).firstName("Mori").lastName("Java").email("Mori@Java.com").build();
-
-
-        when(employeeService.getEmployeeById(employeeId)).thenReturn(Optional.of(employee));
-
+        Employee employee = Employee.builder().firstName("Mori").lastName("Java").email("Mori@Java.com").build();
+        repository.save(employee);
 
         //when
-        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employee.getId()));
 
         //then
 
         response.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName", CoreMatchers.is(employee.getFirstName())))
-                .andExpect(jsonPath("$.lastName", CoreMatchers.is(employee.getLastName())))
-                .andExpect(jsonPath("$.email", CoreMatchers.is(employee.getEmail())));
+                .andExpect(jsonPath("$.lastName", CoreMatchers.is(employee.getLastName())));
     }
 
-    @DisplayName("Junit test for Negative Senario GetEmployeeById REST API")
+    @DisplayName("Integration test for Negative Senario GetEmployeeById REST API")
     @Test
     void givenEmloyeeId_whenGetEmployeeById_thenEmpty() throws Exception {
         //given
-        long employeeId = 2L;
-        Employee employee = Employee.builder().id(employeeId).firstName("Mori").lastName("Java").email("Mori@Java.com").build();
-
-        when(employeeService.getEmployeeById(employeeId)).thenReturn(Optional.empty());
+        long emloyeeId = 1L;
+        Employee employee = Employee.builder().firstName("Mori").lastName("Java").email("Mori@Java.com").build();
+        repository.save(employee);
 
         //when
-        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", emloyeeId));
 
         //then
         response.andDo(print())
@@ -128,14 +116,12 @@ class EmployeeControllerTests {
     @Test
     void givenEmloyeeId_whenUpdateEmloyee_thenUpdatedEmployeeObject() throws Exception {
         //given
-        long employeeId = 1L;
-        Employee savedEmployee = Employee.builder().id(employeeId).firstName("Mori").lastName("Java").email("Mori@Java.com").build();
-        Employee updatedEmployee = Employee.builder().id(employeeId).firstName("LALA").lastName("HAHA").email("LALA@HAHA.com").build();
+        Employee savedEmployee = Employee.builder().firstName("Mori").lastName("Java").email("Mori@Java.com").build();
+        repository.save(savedEmployee);
+        Employee updatedEmployee = Employee.builder().firstName("LALA").lastName("HAHA").email("LALA@HAHA.com").build();
 
-        when(employeeService.getEmployeeById(employeeId)).thenReturn(Optional.of(savedEmployee));
-        when(employeeService.updateEmployee(ArgumentMatchers.any(Employee.class))).then(returnsFirstArg());
         //when
-        ResultActions response = mockMvc.perform(put("/api/employees/{id}", employeeId)
+        ResultActions response = mockMvc.perform(put("/api/employees/{id}", savedEmployee.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(updatedEmployee)));
 
@@ -147,18 +133,17 @@ class EmployeeControllerTests {
                 .andExpect(jsonPath("$.email", CoreMatchers.is(updatedEmployee.getEmail())));
     }
 
-    @DisplayName("Junit test for Negative senario Update Employee REST API")
+    @DisplayName("Interation test for Negative senario Update Employee REST API")
     @Test
     void givenEmloyeeId_whenUpdateEmloyee_thenEmpty() throws Exception {
         //given
-        long employeeId = 1L;
-        Employee savedEmployee = Employee.builder().id(employeeId).firstName("Mori").lastName("Java").email("Mori@Java.com").build();
-        Employee updatedEmployee = Employee.builder().id(employeeId).firstName("LALA").lastName("HAHA").email("LALA@HAHA.com").build();
+        long emloyeeId = 1L;
+        Employee savedEmployee = Employee.builder().firstName("Mori").lastName("Java").email("Mori@Java.com").build();
+        repository.save(savedEmployee);
+        Employee updatedEmployee = Employee.builder().firstName("LALA").lastName("HAHA").email("LALA@HAHA.com").build();
 
-        when(employeeService.getEmployeeById(employeeId)).thenReturn(Optional.empty());
-        when(employeeService.updateEmployee(ArgumentMatchers.any(Employee.class))).then(returnsFirstArg());
         //when
-        ResultActions response = mockMvc.perform(put("/api/employees/{id}", employeeId)
+        ResultActions response = mockMvc.perform(put("/api/employees/{id}", emloyeeId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(updatedEmployee)));
 
@@ -171,15 +156,14 @@ class EmployeeControllerTests {
     @Test
     void givenEmloyeeId_whenDeleteEmloyee_thenOK() throws Exception {
         //given
-        long employeeId = 1L;
-        doNothing().when(employeeService).deleteEmployee(employeeId);
+        Employee savedEmployee = Employee.builder().firstName("Mori").lastName("Java").email("Mori@Java.com").build();
+        repository.save(savedEmployee);
         //when
-        ResultActions response = mockMvc.perform(delete("/api/employees/{id}", employeeId));
+        ResultActions response = mockMvc.perform(delete("/api/employees/{id}", savedEmployee.getId()));
 
         //then
         response.andDo(print())
                 .andExpect(status().isOk());
     }
-
 
 }

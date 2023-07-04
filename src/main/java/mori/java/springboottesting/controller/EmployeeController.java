@@ -38,7 +38,6 @@ public class EmployeeController {
     @PutMapping("{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable long id, @RequestBody Employee employee) {
         return employeeService.getEmployeeById(id).map(savedEmployee -> {
-
             savedEmployee.setFirstName(employee.getFirstName());
             savedEmployee.setLastName(employee.getLastName());
             savedEmployee.setEmail(employee.getEmail());
